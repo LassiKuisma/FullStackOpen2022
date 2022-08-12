@@ -1,0 +1,40 @@
+FullStackOpen osa 0
+
+T0.5 & 0.6: Käyttäjä luo uuden muistiinpanon single-page-app:ssa
+
+Selain                                 Palvelin
+ | HTTP GET https://.../spa             |
+ | -----------------------------------> |
+ |                           HTML-koodi |
+ | <----------------------------------- |
+ |                                      |
+ | HTTP GET main.css                    |
+ | -----------------------------------> |
+ |                             main.css |
+ | <----------------------------------- |
+ |                                      |
+ | HTTP GET spa.js                      |
+ | -----------------------------------> |
+ |                               spa.js |
+ | <----------------------------------- |
+ |                                      |
+ | (sivu ladattu, selain suorittaa js,  |
+ |  js koodi pyytää data.json)          |
+ | HTTP GET data.json                   |
+ | -----------------------------------> |
+ |                            data.json |
+ | <----------------------------------- |
+ |                                      |
+ | (0.6: muistiinpanon luonti)          |
+ |                                      |
+ | HTTP POST {new_note: "text here"}    |
+ | -----------------------------------> |
+ |           Status code: 201 (created) |
+ | <----------------------------------- |
+ |                                      |
+ |                                      |
+ | (sivua ei ladata uudelleen. js:ssä   |
+ |  määritelty event handler lisää      |
+ |  muistiinpanon listaan ja selain     |
+ |  renderöi sen)                       |
+ |                                      |

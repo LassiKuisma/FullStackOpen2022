@@ -1,0 +1,38 @@
+FullStackOpen osa 0
+
+T0.4: Käyttäjä luo uuden muistiinpanon
+
+Selain                                 Palvelin
+ |                                      |
+ | HTTP POST {new_note: "text here"}    |
+ | -----------------------------------> |
+ |          Status code: 302 (redirect) |
+ | <----------------------------------- |
+ |                                      |
+ |                                      |
+ | (selain lataa sivun uudelleen)       |
+ | HTTP GET https://.../notes           |
+ | -----------------------------------> |
+ |                           HTML-koodi |
+ | <----------------------------------- |
+ |                                      |
+ |                                      |
+ | HTTP GET main.css                    |
+ | -----------------------------------> |
+ |                             main.css |
+ | <----------------------------------- |
+ |                                      |
+ |                                      |
+ | HTTP GET main.js                     |
+ | -----------------------------------> |
+ |                              main.js |
+ | <----------------------------------- |
+ |                                      |
+ |                                      |
+ | (reload valmis, selain suorittaa js, |
+ |  js koodi pyytää data.json)          |
+ | HTTP GET data.json                   |
+ | -----------------------------------> |
+ |                            data.json |
+ | <----------------------------------- |
+ |                                      |
