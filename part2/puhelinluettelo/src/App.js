@@ -1,5 +1,36 @@
 import { useState } from 'react'
 
+const Filter = ({ filter, handler }) => {
+  return (
+    <div>
+      Filter: <input
+        value={filter}
+        onChange={handler}
+      />
+    </div>
+  )
+}
+
+const PersonForm = ({ newName, handleNameChange, newNumber, handleNumberChange, addContact }) => {
+  return (
+    <form onSubmit={addContact}>
+      <div>
+        name: <input
+          value={newName}
+          onChange={handleNameChange}
+        />
+      </div>
+      <div>number: <input
+        value={newNumber}
+        onChange={handleNumberChange}
+      /></div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  )
+}
+
 const Contacts = ({ contacts }) => {
   return (
     <div>
@@ -65,28 +96,15 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        Filter: <input
-          value={filter}
-          onChange={handleFilterChange}
-        />
-      </div>
+      <Filter value={filter} handler={handleFilterChange} />
       <h3>Add new contact</h3>
-      <form onSubmit={addContact}>
-        <div>
-          name: <input
-            value={newName}
-            onChange={handleNameChange}
-          />
-        </div>
-        <div>number: <input
-          value={newNumber}
-          onChange={handleNumberChange}
-        /></div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm
+        newName={newName}
+        handleNameChange={handleNameChange}
+        newNumber={newNumber}
+        handleNumberChange={handleNumberChange}
+        addContact={addContact}
+      />
       <h2>Numbers</h2>
       <Contacts contacts={contactsToShow} />
     </div>
