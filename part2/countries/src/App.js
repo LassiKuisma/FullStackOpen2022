@@ -39,7 +39,26 @@ const SingleCountry = ({ country }) => {
   )
 }
 
-const Countries = ({ allCountries, filterTerm }) => {
+const MultiCountryList = ({ countries, setFilter }) => {
+  const handleShowCountry = (country) => {
+    setFilter(country.name);
+  }
+
+  return (
+    <div>
+      {countries.map(country => {
+        return (
+          <div key={country.name}>
+            {country.name}
+            <button onClick={() => handleShowCountry(country)}>show</button>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+const Countries = ({ allCountries, filterTerm, setFilter }) => {
   if (filterTerm.length === 0) {
     return (
       <div>No search term given.</div>
@@ -67,9 +86,7 @@ const Countries = ({ allCountries, filterTerm }) => {
   }
 
   return (
-    <div>
-      {countriesToShow.map(country => <div key={country.name}>{country.name}</div>)}
-    </div>
+    <MultiCountryList countries={countriesToShow} setFilter={setFilter} />
   )
 }
 
@@ -115,7 +132,7 @@ const App = () => {
     <div>
       <Filter value={filter} onChangeHandler={handleFilterChange} />
       <h1>Search results</h1>
-      <Countries allCountries={countries} filterTerm={filter} />
+      <Countries allCountries={countries} filterTerm={filter} setFilter={setFilter} />
     </div>
   );
 }
