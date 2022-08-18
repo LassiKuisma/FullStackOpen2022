@@ -34,6 +34,7 @@ const SingleCountry = ({ country }) => {
       <ul>
         {country.languages.map(language => <li key={language}>{language}</li>)}
       </ul>
+      <img src={country.flag} alt={`Flag of ${country.name}`} />
     </div>
   )
 }
@@ -100,6 +101,7 @@ const App = () => {
             area: countryInfo.area,
             capital: countryInfo.capital,
             languages: languages,
+            flag: countryInfo.flags['png'],
           };
           countriesList.push(countryObject);
         });
