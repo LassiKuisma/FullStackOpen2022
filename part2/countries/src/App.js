@@ -13,7 +13,7 @@ const Filter = ({ value, onChangeHandler }) => {
   )
 }
 
-const SingleCountry = ({ country }) => {
+const CountryDetails = ({ country }) => {
   let capital = "Unknown";
   if (country.capital !== undefined) {
     capital = country.capital.join(', ')
@@ -114,7 +114,7 @@ const App = () => {
     const country = countriesToShow[0];
 
     result = <div>
-      <SingleCountry country={country} />
+      <CountryDetails country={country} />
     </div>;
 
   } else {
