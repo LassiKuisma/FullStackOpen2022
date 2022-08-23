@@ -31,22 +31,20 @@ const CountryDetails = ({ country }) => {
   )
 }
 
-const CountryList = ({ countries, handleShowCountry }) => {
+const CountryList = ({ countries, onShowCountry }) => {
   return (
     <div>
-      {countries.map(country => {
-        return (
-          <div key={country.name}>
-            {country.name}
-            <button onClick={() => handleShowCountry(country)}>show</button>
-          </div>
-        )
-      })}
+      {countries.map(country =>
+        <div key={country.name}>
+          {country.name}
+          <button onClick={() => onShowCountry(country)}>show</button>
+        </div>
+      )}
     </div>
   )
 }
 
-const Countries = ({ countries, filterIsEmpty, handleShowCountry }) => {
+const Countries = ({ countries, filterIsEmpty, onShowCountry }) => {
 
   if (filterIsEmpty) {
     return <div>Type in search term to filter countries.</div>;
@@ -73,7 +71,7 @@ const Countries = ({ countries, filterIsEmpty, handleShowCountry }) => {
     return (
       <CountryList
         countries={countries}
-        handleShowCountry={handleShowCountry}
+        onShowCountry={onShowCountry}
       />
     );
   }
@@ -106,7 +104,7 @@ const App = () => {
             ? []
             : Object.values(countryInfo.languages);
 
-          let countryObject = {
+          return {
             name: countryInfo.name.common,
             area: countryInfo.area,
             capital: countryInfo.capital,
@@ -114,8 +112,6 @@ const App = () => {
             flag: countryInfo.flags['png'],
             location: countryInfo.latlng,
           };
-
-          return countryObject;
         });
 
         setCountries(countriesList);
@@ -139,7 +135,7 @@ const App = () => {
       <Countries
         countries={countriesToShow}
         filterIsEmpty={filter.length === 0}
-        handleShowCountry={handleShowCountry}
+        onShowCountry={handleShowCountry}
       />
     </div>
   );
