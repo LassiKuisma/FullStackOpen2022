@@ -67,16 +67,11 @@ const App = () => {
       .then(response => {
         console.log('Country data fetched');
 
+        const countriesList = response.data.map(countryInfo => {
 
-        let countriesList = Array(response.data.length);
-
-        response.data.forEach(countryInfo => {
-
-          let languages = [];
-
-          if (countryInfo.languages !== undefined) {
-            languages = Object.values(countryInfo.languages);
-          }
+          const languages = countryInfo.languages === undefined
+            ? []
+            : Object.values(countryInfo.languages);
 
           let countryObject = {
             name: countryInfo.name.common,
@@ -86,7 +81,8 @@ const App = () => {
             flag: countryInfo.flags['png'],
             location: countryInfo.latlng,
           };
-          countriesList.push(countryObject);
+
+          return countryObject;
         });
 
         setCountries(countriesList);
