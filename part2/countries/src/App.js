@@ -13,7 +13,7 @@ const Filter = ({ value, onChangeHandler }) => {
   )
 }
 
-const CountryDetails = ({ country }) => {
+const CountryDetails = ({ country, weather, setWeather }) => {
   let capital = "Unknown";
   if (country.capital !== undefined) {
     capital = country.capital.join(', ')
@@ -27,6 +27,14 @@ const CountryDetails = ({ country }) => {
       <h2>Languages:</h2>
       <ul>{country.languages.map(language => <li key={language}>{language}</li>)}</ul>
       <img src={country.flag} alt={`Flag of ${country.name}`} />
+      <h2>Weather in {country.name}</h2>
+      <button
+        onClick={() => {
+          GetWeatherData(country.location, setWeather)
+        }}>
+        Click here to fetch weather data.
+      </button>
+      <Weather weather={weather} />
     </div>
   )
 }
@@ -64,31 +72,9 @@ const Countries = ({
     return <div>No results found.</div>;
   }
 
-  if (countries.length === 1) {
-    const country = countries[0];
-
-    return (
-      <div>
-        <CountryDetails country={country} />
-        <h2>Weather in {country.name}</h2>
-        <button
-          onClick={() => {
-            GetWeatherData(country.location, setWeather)
-          }}>
-          Click here to fetch weather data.
-        </button>
-        <Weather weather={weather} />
-      </div>
-    );
-
-  } else {
-    return (
-      <CountryList
-        countries={countries}
-        onShowCountry={onShowCountry}
-      />
-    );
-  }
+  return (countries.length === 1)
+    ? <CountryDetails country={countries[0]} weather={weather} setWeather={setWeather} />
+    : <CountryList countries={countries} onShowCountry={onShowCountry} />;
 }
 
 const Weather = ({ weather }) => {
