@@ -44,7 +44,13 @@ const CountryList = ({ countries, onShowCountry }) => {
   )
 }
 
-const Countries = ({ countries, filterIsEmpty, onShowCountry }) => {
+const Countries = ({
+  countries,
+  filterIsEmpty,
+  onShowCountry,
+  weather,
+  setWeather
+}) => {
 
   if (filterIsEmpty) {
     return <div>Type in search term to filter countries.</div>;
@@ -64,6 +70,14 @@ const Countries = ({ countries, filterIsEmpty, onShowCountry }) => {
     return (
       <div>
         <CountryDetails country={country} />
+        <h2>Weather in {country.name}</h2>
+        <button
+          onClick={() => {
+            GetWeatherData(country.location, setWeather)
+          }}>
+          Click here to fetch weather data.
+        </button>
+        <Weather weather={weather} />
       </div>
     );
 
@@ -77,9 +91,68 @@ const Countries = ({ countries, filterIsEmpty, onShowCountry }) => {
   }
 }
 
+const Weather = ({ weather }) => {
+  if (weather === undefined) {
+    return (
+      <div>
+        No weather data available.
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <div>Temperature: {weather.temperature} Celcius</div>
+      <img
+        src={`http://openweathermap.org/img/wn/${weather.cloudIcon}@2x.png`}
+        alt={`${weather.cloudDescription}`}>
+      </img>
+      <div>Wind: {weather.windSpeed} m/s</div>
+    </div>
+  )
+}
+
+const GetWeatherData = (location, setWeather) => {
+  console.log('Getting weather data...');
+
+  const apiKey = process.env.REACT_APP_API_KEY;
+
+  if (apiKey === undefined) {
+    console.log("Can't find api key.");
+    return;
+  }
+
+  const lat = location[0];
+  const lon = location[1];
+  const units = "metric";
+  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${units}`;
+
+  axios
+    .get(apiUrl)
+    .then(response => {
+      if (response.status !== 200) {
+        console.log('Failed to get weather');
+        setWeather(undefined);
+      }
+
+      console.log('Got weather response!');
+
+
+      const weatherObject = {
+        temperature: response.data.main.temp,
+        windSpeed: response.data.wind.speed,
+        cloudIcon: response.data.weather[0].icon,
+        cloudDescription: response.data.weather[0].description,
+      }
+
+      setWeather(weatherObject);
+    })
+}
+
 const App = () => {
   const [filter, setFilter] = useState('');
   const [countries, setCountries] = useState([]);
+  const [weather, setWeather] = useState(undefined);
 
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
@@ -136,6 +209,8 @@ const App = () => {
         countries={countriesToShow}
         filterIsEmpty={filter.length === 0}
         onShowCountry={handleShowCountry}
+        weather={weather}
+        setWeather={setWeather}
       />
     </div>
   );
