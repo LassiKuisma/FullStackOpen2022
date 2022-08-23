@@ -46,6 +46,39 @@ const CountryList = ({ countries, handleShowCountry }) => {
   )
 }
 
+const Countries = ({ countries, filterIsEmpty, handleShowCountry }) => {
+
+  if (filterIsEmpty) {
+    return <div>Type in search term to filter countries.</div>;
+  }
+
+  if (countries.length > 10) {
+    return <div>Too many results, please be more specific.</div>;
+  }
+
+  if (countries.length === 0) {
+    return <div>No results found.</div>;
+  }
+
+  if (countries.length === 1) {
+    const country = countries[0];
+
+    return (
+      <div>
+        <CountryDetails country={country} />
+      </div>
+    );
+
+  } else {
+    return (
+      <CountryList
+        countries={countries}
+        handleShowCountry={handleShowCountry}
+      />
+    );
+  }
+}
+
 const App = () => {
   const [filter, setFilter] = useState('');
   const [countries, setCountries] = useState([]);
@@ -99,33 +132,15 @@ const App = () => {
     });
 
 
-  let result;
-
-  if (filter.length === 0) {
-    result = <div>Type in search term to filter countries.</div>;
-
-  } else if (countriesToShow.length > 10) {
-    result = <div>Too many results, please be more specific.</div>;
-
-  } else if (countriesToShow.length === 0) {
-    result = <div>No results found.</div>;
-
-  } else if (countriesToShow.length === 1) {
-    const country = countriesToShow[0];
-
-    result = <div>
-      <CountryDetails country={country} />
-    </div>;
-
-  } else {
-    result = <CountryList countries={countriesToShow} handleShowCountry={handleShowCountry} />;
-  }
-
   return (
     <div>
       <Filter value={filter} onChangeHandler={handleFilterChange} />
       <h1>Search results</h1>
-      {result}
+      <Countries
+        countries={countriesToShow}
+        filterIsEmpty={filter.length === 0}
+        handleShowCountry={handleShowCountry}
+      />
     </div>
   );
 }
