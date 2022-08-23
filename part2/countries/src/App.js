@@ -13,7 +13,14 @@ const Filter = ({ value, onChangeHandler }) => {
   )
 }
 
-const CountryDetails = ({ country, weather, setWeather }) => {
+const CountryDetails = ({ country }) => {
+  const [weather, setWeather] = useState(undefined);
+
+  useEffect(() => {
+    GetWeatherData(country.location, setWeather)
+  }, [country.location]);
+
+
   let capital = "Unknown";
   if (country.capital !== undefined) {
     capital = country.capital.join(', ')
@@ -28,12 +35,6 @@ const CountryDetails = ({ country, weather, setWeather }) => {
       <ul>{country.languages.map(language => <li key={language}>{language}</li>)}</ul>
       <img src={country.flag} alt={`Flag of ${country.name}`} />
       <h2>Weather in {country.name}</h2>
-      <button
-        onClick={() => {
-          GetWeatherData(country.location, setWeather)
-        }}>
-        Click here to fetch weather data.
-      </button>
       <Weather weather={weather} />
     </div>
   )
@@ -56,8 +57,6 @@ const Countries = ({
   countries,
   filterIsEmpty,
   onShowCountry,
-  weather,
-  setWeather
 }) => {
 
   if (filterIsEmpty) {
@@ -73,7 +72,7 @@ const Countries = ({
   }
 
   return (countries.length === 1)
-    ? <CountryDetails country={countries[0]} weather={weather} setWeather={setWeather} />
+    ? <CountryDetails country={countries[0]} />
     : <CountryList countries={countries} onShowCountry={onShowCountry} />;
 }
 
@@ -138,7 +137,6 @@ const GetWeatherData = (location, setWeather) => {
 const App = () => {
   const [filter, setFilter] = useState('');
   const [countries, setCountries] = useState([]);
-  const [weather, setWeather] = useState(undefined);
 
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
@@ -195,8 +193,6 @@ const App = () => {
         countries={countriesToShow}
         filterIsEmpty={filter.length === 0}
         onShowCountry={handleShowCountry}
-        weather={weather}
-        setWeather={setWeather}
       />
     </div>
   );
