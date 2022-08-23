@@ -22,28 +22,16 @@ const SingleCountry = ({ country }) => {
   return (
     <div>
       <h1>{country.name}</h1>
-      <div>
-        Capital: {capital}
-      </div>
-      <div>
-        Area: {country.area} km²
-      </div>
-      <h2>
-        Languages:
-      </h2>
-      <ul>
-        {country.languages.map(language => <li key={language}>{language}</li>)}
-      </ul>
+      <div>Capital: {capital}</div>
+      <div>Area: {country.area} km²</div>
+      <h2>Languages:</h2>
+      <ul>{country.languages.map(language => <li key={language}>{language}</li>)}</ul>
       <img src={country.flag} alt={`Flag of ${country.name}`} />
     </div>
   )
 }
 
-const MultiCountryList = ({ countries, setFilter }) => {
-  const handleShowCountry = (country) => {
-    setFilter(country.name);
-  }
-
+const CountryList = ({ countries, handleShowCountry }) => {
   return (
     <div>
       {countries.map(country => {
@@ -58,38 +46,6 @@ const MultiCountryList = ({ countries, setFilter }) => {
   )
 }
 
-const Countries = ({ allCountries, filterTerm, setFilter }) => {
-  if (filterTerm.length === 0) {
-    return (
-      <div>No search term given.</div>
-    )
-  }
-
-  const countriesToShow = allCountries
-    .filter(country => {
-      let nameLower = country.name.toLowerCase();
-      let filterLower = filterTerm.toLowerCase();
-
-      return nameLower.startsWith(filterLower);
-    });
-
-  if (countriesToShow.length > 10) {
-    return (
-      <div>Too many matches, please be more specific.</div>
-    )
-  }
-
-  if (countriesToShow.length === 1) {
-    return (
-      <SingleCountry country={countriesToShow[0]} />
-    )
-  }
-
-  return (
-    <MultiCountryList countries={countriesToShow} setFilter={setFilter} />
-  )
-}
-
 const App = () => {
   const [filter, setFilter] = useState('');
   const [countries, setCountries] = useState([]);
@@ -98,10 +54,19 @@ const App = () => {
     setFilter(event.target.value);
   }
 
+  const handleShowCountry = (country) => {
+    setFilter(country.name);
+  }
+
+  // load country data
   useEffect(() => {
+    console.log('Fetching country data');
+
     axios
       .get('https://restcountries.com/v3.1/all')
       .then(response => {
+        console.log('Country data fetched');
+
 
         let countriesList = Array(response.data.length);
 
@@ -119,6 +84,7 @@ const App = () => {
             capital: countryInfo.capital,
             languages: languages,
             flag: countryInfo.flags['png'],
+            location: countryInfo.latlng,
           };
           countriesList.push(countryObject);
         });
@@ -128,11 +94,42 @@ const App = () => {
   }, []);
 
 
+  const countriesToShow = countries
+    .filter(country => {
+      let nameLower = country.name.toLowerCase();
+      let filterLower = filter.toLowerCase();
+
+      return nameLower.startsWith(filterLower);
+    });
+
+
+  let result;
+
+  if (filter.length === 0) {
+    result = <div>Type in search term to filter countries.</div>;
+
+  } else if (countriesToShow.length > 10) {
+    result = <div>Too many results, please be more specific.</div>;
+
+  } else if (countriesToShow.length === 0) {
+    result = <div>No results found.</div>;
+
+  } else if (countriesToShow.length === 1) {
+    const country = countriesToShow[0];
+
+    result = <div>
+      <SingleCountry country={country} />
+    </div>;
+
+  } else {
+    result = <CountryList countries={countriesToShow} handleShowCountry={handleShowCountry} />;
+  }
+
   return (
     <div>
       <Filter value={filter} onChangeHandler={handleFilterChange} />
       <h1>Search results</h1>
-      <Countries allCountries={countries} filterTerm={filter} setFilter={setFilter} />
+      {result}
     </div>
   );
 }
