@@ -21,8 +21,12 @@ const App = () => {
       id: notes.length + 1,
     }
 
-    setNotes(notes.concat(noteObject));
-    setNewNote('');
+    axios
+      .post('http://localhost:3001/notes', noteObject)
+      .then(response => {
+        setNotes(notes.concat(response.data))
+        setNewNote('')
+      })
   }
 
   const notesToShow = showAll
@@ -41,6 +45,23 @@ const App = () => {
 
   console.log('render', notes.length, 'notes');
 
+  const toggleImportanceOf = (id) => {
+    const url = `http://localhost:3001/notes/${id}`
+    const note = notes.find(note => note.id === id)
+    const changed = { ...note, important: !note.important }
+
+
+    axios
+      .put(url, changed)
+      .then(response => {
+        setNotes(notes.map(note =>
+          note.id !== id
+            ? note :
+            response.data
+        ))
+      })
+  }
+
   return (
     <div>
       <h1>Notes</h1>
@@ -51,7 +72,11 @@ const App = () => {
       </div>
       <ul>
         {notesToShow.map(note =>
-          <Note key={note.id} note={note} />
+          <Note
+            key={note.id}
+            note={note}
+            toggleImportance={() => toggleImportanceOf(note.id)}
+          />
         )}
       </ul>
       <form onSubmit={addNote}>
