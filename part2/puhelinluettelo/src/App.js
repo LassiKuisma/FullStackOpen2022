@@ -33,13 +33,36 @@ const PersonForm = ({ newName, handleNameChange, newNumber, handleNumberChange, 
   )
 }
 
-const Contacts = ({ contacts }) => {
+const Contact = ({ contact }) => {
   return (
-    <div>
+    <>
+      {contact.name} {contact.number}
+    </>
+  )
+}
+
+const ButtonDeleteContact = ({ deleteContact }) => {
+  return (
+    <button onClick={deleteContact}>
+      Delete
+    </button>
+  )
+}
+
+const Contacts = ({ contacts, deleteContact }) => {
+  return (
+    <ul>
       {contacts.map(contact =>
-        <p key={contact.name}>{contact.name} {contact.number}</p>
+        <li key={contact.name}>
+          <Contact contact={contact} />
+          <ButtonDeleteContact
+            id={contact.id}
+            name={contact.name}
+            deleteContact={() => deleteContact(contact.id, contact.name)}
+          />
+        </li>
       )}
-    </div>
+    </ul>
   )
 }
 
@@ -72,6 +95,23 @@ const App = () => {
         setPersons(persons.concat(newContact));
         setNewName('');
         setNewNumber('0');
+      })
+  }
+
+  const deleteContact = (id, name) => {
+    const confirmation = window.confirm(`Delete ${name}?`)
+    if (!confirmation) {
+      return;
+    }
+
+    contactService
+      .deleteContact(id)
+      .then(_response => {
+        setPersons(persons.filter(person => person.id !== id))
+      })
+      .catch(error => {
+        console.log(`Failed to delete id=${id}, error message: ${error}`);
+        alert(`Failed to delete ${name}`)
       })
   }
 
@@ -115,7 +155,7 @@ const App = () => {
         addContact={addContact}
       />
       <h2>Numbers</h2>
-      <Contacts contacts={contactsToShow} />
+      <Contacts contacts={contactsToShow} deleteContact={deleteContact} />
     </div>
   )
 }
