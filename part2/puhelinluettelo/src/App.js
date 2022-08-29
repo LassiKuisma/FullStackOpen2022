@@ -76,18 +76,36 @@ const App = () => {
   const addContact = (event) => {
     event.preventDefault();
 
-    let alreadyPresent = persons.find(person => person.name === newName) !== undefined;
+    const personObject = {
+      name: newName,
+      number: newNumber,
+    }
+
+    const oldContact = persons.find(person => person.name === newName)
+    const alreadyPresent = oldContact !== undefined
     if (alreadyPresent) {
 
-      alert(`${newName} is already added to phonebook!`);
+      const replaceOldNumber = window.confirm(`${newName} is already added to the phonebook, replace old number with new one?`)
+      if (!replaceOldNumber) {
+        return;
+      }
+
+      contactService
+        .updateContact(oldContact.id, personObject)
+        .then(response => {
+          setPersons(persons.map(
+            person => person.id !== oldContact.id
+              ? person
+              : response
+          ));
+        })
+
+
       return;
     }
 
 
-    let personObject = {
-      name: newName,
-      number: newNumber,
-    }
+
 
     contactService
       .createNewContact(personObject)
