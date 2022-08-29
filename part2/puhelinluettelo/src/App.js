@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import contactService from './services/contacts'
+
 
 const Filter = ({ filter, handler }) => {
   return (
@@ -65,9 +66,13 @@ const App = () => {
       number: newNumber,
     }
 
-    setPersons(persons.concat(personObject));
-    setNewName('');
-    setNewNumber('0');
+    contactService
+      .createNewContact(personObject)
+      .then(newContact => {
+        setPersons(persons.concat(newContact));
+        setNewName('');
+        setNewNumber('0');
+      })
   }
 
   const handleNameChange = (event) => {
@@ -90,10 +95,10 @@ const App = () => {
     );
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(persons.concat(response.data));
+    contactService
+      .getAll()
+      .then(initialContacts => {
+        setPersons(persons.concat(initialContacts));
       })
   }, []);
 
