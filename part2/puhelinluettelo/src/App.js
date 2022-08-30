@@ -160,7 +160,16 @@ const App = () => {
       })
       .catch(error => {
         console.log(`Failed to delete id=${id}, error message: ${error}`);
-        alert(`Failed to delete ${name}`)
+        setPersons(persons.filter(person => person.id !== id))
+
+        setNotification({
+          type: "red",
+          message: `${name} has already been removed from server!`
+        })
+
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000);
       })
   }
 
