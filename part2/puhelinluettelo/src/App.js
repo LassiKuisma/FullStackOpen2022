@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import contactService from './services/contacts'
+import Notification from './components/Notification'
 
 
 const Filter = ({ filter, handler }) => {
@@ -73,6 +74,43 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
 
+  const [notification, setNotification] = useState(null)
+
+  const addNewContact = (personObject) => {
+    contactService
+      .createNewContact(personObject)
+      .then(newContact => {
+        setPersons(persons.concat(newContact));
+        setNewName('');
+        setNewNumber('');
+      })
+
+
+    setNotification(`Added ${personObject.name}`)
+
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000);
+  }
+
+  const updateContact = (oldId, personObject) => {
+    contactService
+      .updateContact(oldId, personObject)
+      .then(response => {
+        setPersons(persons.map(
+          person => person.id !== oldId
+            ? person
+            : response
+        ));
+      })
+
+    setNotification(`Updated ${personObject.name}`)
+
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000);
+  }
+
   const addContact = (event) => {
     event.preventDefault();
 
@@ -83,37 +121,15 @@ const App = () => {
 
     const oldContact = persons.find(person => person.name === newName)
     const alreadyPresent = oldContact !== undefined
-    if (alreadyPresent) {
+    if (!alreadyPresent) {
+      addNewContact(personObject);
+    } else {
 
       const replaceOldNumber = window.confirm(`${newName} is already added to the phonebook, replace old number with new one?`)
-      if (!replaceOldNumber) {
-        return;
+      if (replaceOldNumber) {
+        updateContact(oldContact.id, personObject)
       }
-
-      contactService
-        .updateContact(oldContact.id, personObject)
-        .then(response => {
-          setPersons(persons.map(
-            person => person.id !== oldContact.id
-              ? person
-              : response
-          ));
-        })
-
-
-      return;
     }
-
-
-
-
-    contactService
-      .createNewContact(personObject)
-      .then(newContact => {
-        setPersons(persons.concat(newContact));
-        setNewName('');
-        setNewNumber('0');
-      })
   }
 
   const deleteContact = (id, name) => {
@@ -126,6 +142,13 @@ const App = () => {
       .deleteContact(id)
       .then(_response => {
         setPersons(persons.filter(person => person.id !== id))
+
+        setNotification(`Deleted ${name}`)
+
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000);
+
       })
       .catch(error => {
         console.log(`Failed to delete id=${id}, error message: ${error}`);
@@ -163,6 +186,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notification} />
       <Filter value={filter} handler={handleFilterChange} />
       <h3>Add new contact</h3>
       <PersonForm
