@@ -85,8 +85,10 @@ const App = () => {
         setNewNumber('');
       })
 
-
-    setNotification(`Added ${personObject.name}`)
+    setNotification({
+      "type": "green",
+      "message": `Added ${personObject.name}`
+    })
 
     setTimeout(() => {
       setNotification(null)
@@ -104,7 +106,10 @@ const App = () => {
         ));
       })
 
-    setNotification(`Updated ${personObject.name}`)
+    setNotification({
+      type: "yellow",
+      message: `Updated ${personObject.name}`
+    })
 
     setTimeout(() => {
       setNotification(null)
@@ -143,7 +148,10 @@ const App = () => {
       .then(_response => {
         setPersons(persons.filter(person => person.id !== id))
 
-        setNotification(`Deleted ${name}`)
+        setNotification({
+          type: "red",
+          message: `Deleted ${name}`
+        })
 
         setTimeout(() => {
           setNotification(null)
@@ -186,7 +194,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notification} />
+      <Notification notification={notification} />
       <Filter value={filter} handler={handleFilterChange} />
       <h3>Add new contact</h3>
       <PersonForm
