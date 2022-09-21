@@ -42,7 +42,11 @@ app.get('/api/notes/:id', (request, response, next) => {
 })
 
 app.delete('/api/notes/:id', (request, response) => {
-    console.log('Deleting note not yet implemented!');
+    Note.findByIdAndRemove(request.params.id)
+        .then(result => {
+            response.status(204).end()
+        })
+        .catch(error => next(error))
 })
 
 app.post('/api/notes', (request, response) => {
@@ -64,6 +68,22 @@ app.post('/api/notes', (request, response) => {
         console.log('New note posted!');
         response.json(savedNote)
     })
+})
+
+app.put('/api/notes/:id', (request, response, next) => {
+    const body = request.body
+
+    const note = {
+        content: body.content,
+        important: body.important,
+    }
+
+    Note.findByIdAndUpdate(request.params.id, note, { new: true })
+        .then(updated => {
+            response.json(updated)
+        })
+        .catch(error => next(error))
+
 })
 
 const unknownEndpoint = (request, response) => {
